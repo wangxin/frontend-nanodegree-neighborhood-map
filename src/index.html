@@ -19,7 +19,12 @@
             <i class="material-icons" id="closeBtn">close</i>
           </button>
         </div>
-        <p>Search box and list of positions</p>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search Locations" aria-label="Search Locations">
+          <span class="input-group-addon">
+            <i class="material-icons">search</i>
+          </span>
+        </div>
       </div>
 
       <div id="mainPanel" class="container-fluid p-0">
@@ -31,7 +36,6 @@
         </div>
 
         <div id="mapContainer">
-          <p>Map here</p>
         </div>
 
       </div>
@@ -43,5 +47,8 @@
     <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/lib/knockout-3.4.2.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0IUJ6WpZTTpn73oeb_DNqiNoHS3oLPtE&callback=initMap">
+    </script>
   </body>
 </html>
