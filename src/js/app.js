@@ -114,10 +114,10 @@ function initMap() {
     center: locationSeattle
   });
 
-  setMarkers(map);
+  createMarkers();
 }
 
-function setMarkers(map) {
+function createMarkers() {
   museums.forEach(function(museum) {
     var marker = new google.maps.Marker({
       position: {lat: museum.lat, lng: museum.lng},
@@ -140,6 +140,17 @@ function setMarkers(map) {
 
 var ViewModel = function () {
   this.museumList = ko.observableArray(museums);
+
+  this.museumClicked = function(museum) {
+    markers.forEach(function(marker) {
+      if (marker.title === museum.name) {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(function() {
+          marker.setAnimation(null);
+        }, 700);
+      }
+    });
+  };
 };
 
 ko.applyBindings(new ViewModel());
