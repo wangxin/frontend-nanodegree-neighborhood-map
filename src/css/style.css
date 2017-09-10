@@ -22,9 +22,10 @@ body, html {
 @media screen and (min-width: 650px) {
 
     #leftPanel {
-        min-width: 300px;
         position: relative;
-        display: inline;
+        display: inherit;
+        min-width: 300px;
+        max-width: 300px;
     }
 
     #toolbarLeft {
