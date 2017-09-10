@@ -21,7 +21,8 @@
         </div>
 
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Filter Locations" aria-label="Filter Locations">
+          <input type="text" class="form-control" placeholder="Filter Locations" aria-label="Filter Locations"
+          data-bind="value: filterText, event: {change: filterTextChanged}">
           <span class="input-group-addon">
             <i class="material-icons">filter_list</i>
           </span>
@@ -29,7 +30,8 @@
 
         <div class="list-container">
           <div class="list-group" data-bind="foreach: museumList">
-            <a href="#" class="list-group-item list-group-item-action" data-bind="text: name, click: $parent.museumClicked"></a>
+            <a href="#" class="list-group-item list-group-item-action"
+            data-bind="text: name, click: $parent.museumClicked"></a>
           </div>
         </div>
       </div>

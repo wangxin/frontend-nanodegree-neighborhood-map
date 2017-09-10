@@ -139,7 +139,7 @@ function createMarkers() {
 }
 
 var ViewModel = function () {
-  this.museumList = ko.observableArray(museums);
+  this.museumList = ko.observableArray([]);
 
   this.museumClicked = function(museum) {
     markers.forEach(function(marker) {
@@ -151,6 +151,19 @@ var ViewModel = function () {
       }
     });
   };
+
+  this.filterText = ko.observable("");
+
+  this.filterTextChanged = function() {
+    var latestFilterText = this.filterText().toLowerCase();
+    markers.forEach(function(marker) {
+      if (marker.title.toLowerCase().includes(latestFilterText)) {
+        marker.setMap(map);
+      } else {
+        marker.setMap(null);
+      }
+    });
+  }
 };
 
 ko.applyBindings(new ViewModel());
