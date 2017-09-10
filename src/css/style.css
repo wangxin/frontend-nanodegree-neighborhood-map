@@ -5,17 +5,25 @@ body, html {
 
 #appContainer {
     height: 100%;
+    display: flex;
 }
 
 #leftPanel {
-    min-width: 300px;
-    display: none;
+    width: 100%;
+    position: absolute;
+    height: 100%;
     background-color: #eee;
+}
+
+.hide {
+    display: none;
 }
 
 @media screen and (min-width: 650px) {
 
     #leftPanel {
+        min-width: 300px;
+        position: relative;
         display: inline;
     }
 
