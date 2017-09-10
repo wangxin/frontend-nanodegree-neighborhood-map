@@ -1,3 +1,10 @@
+$("#closeBtn").click(function() {
+  $("#leftPanel").addClass("hide");
+});
+
+$("#menuBtn").click(function() {
+  $("#leftPanel").removeClass("hide");
+});
 
 var museums = [
     {
@@ -107,6 +114,10 @@ function initMap() {
     center: locationSeattle
   });
 
+  setMarkers(map);
+}
+
+function setMarkers(map) {
   museums.forEach(function(museum) {
     var marker = new google.maps.Marker({
       position: {lat: museum.lat, lng: museum.lng},
@@ -127,22 +138,8 @@ function initMap() {
   });
 }
 
-$(function() {
+var ViewModel = function () {
+  this.museumList = ko.observableArray(museums);
+};
 
-  $("#closeBtn").click(function() {
-    $("#leftPanel").addClass("hide");
-  });
-
-  $("#menuBtn").click(function() {
-    $("#leftPanel").removeClass("hide");
-  });
-
-
-  var ViewModel = function () {
-    var self = this;
-    self.museumList = ko.observableArray(museums);
-  };
-
-  ko.applyBindings(new ViewModel());
-
-}());
+ko.applyBindings(new ViewModel());
