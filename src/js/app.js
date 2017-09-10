@@ -13,8 +13,4 @@ function initMap() {
     zoom: 13,
     center: seattle
   });
-  var marker = new google.maps.Marker({
-    position: seattle,
-    map: map
-  });
 }
