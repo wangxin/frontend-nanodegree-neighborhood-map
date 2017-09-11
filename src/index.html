@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Neighborhood Map</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/material-icons.css">
     <link rel="stylesheet" href="css/style.css">
   </head>
 
@@ -15,8 +14,8 @@
 
       <div id="leftPanel">
         <div id="toolbarLeft" class="bg-dark text-right">
-          <button type="button" class="btn btn-dark">
-            <i class="material-icons" id="closeBtn">close</i>
+          <button type="button" id="closeBtn" class="btn btn-dark">
+            <img src="icon/ic_close_white.png"/>
           </button>
         </div>
 
@@ -24,7 +23,7 @@
           <input type="text" class="form-control" placeholder="Filter Locations" aria-label="Filter Locations"
           data-bind="textInput: filterText, event: {input: filterTextChanged}">
           <span class="input-group-addon">
-            <i class="material-icons">filter_list</i>
+            <img src="icon/ic_filter.png"/>
           </span>
         </div>
 
@@ -38,8 +37,8 @@
 
       <div id="mainPanel">
         <div id="toolbarRight" class="bg-dark">
-          <button type="button" class="btn btn-dark">
-            <i class="material-icons" id="menuBtn">menu</i>
+          <button type="button" id="menuBtn" class="btn btn-dark">
+            <img src="icon/ic_menu_white.png"/>
           </button>
         </div>
 
