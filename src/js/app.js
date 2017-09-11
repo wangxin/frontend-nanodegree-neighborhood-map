@@ -6,6 +6,13 @@ $("#menuBtn").click(function() {
   $("#leftPanel").removeClass("hide");
 });
 
+var myFoursquareKey = {
+  client_id: "03RWDJQSNB2KCMEFBANXP05OBFIEGOSCXQS1EA2UPIVMKTKE",
+  client_secret: "RFFC3DOC2HY2ABIFMR03WGWZR31J3E0IYTIM1JROUEVZHMKH"
+};
+
+var fourSquareUrl = "https://api.foursquare.com/v2/venues/search?intent=match&query=Seattle Art Museum&ll=47.607309,-122.338133&v=20170911&client_id=03RWDJQSNB2KCMEFBANXP05OBFIEGOSCXQS1EA2UPIVMKTKE&client_secret=RFFC3DOC2HY2ABIFMR03WGWZR31J3E0IYTIM1JROUEVZHMKH"
+
 var museums = [
     {
       name: "Asian Art Museum",
@@ -102,10 +109,17 @@ var museums = [
     //   lat: 47.661007,
     //   lng: -122.313479
     // }
-  ]
+  ];
 
 var markers = [];
 var map;
+var infoWindow;
+var INFO_WINDOW_TEMPLATE = "<div><h6>%TITLE%</h6>" +
+  "<p><b>Address: </b>%ADDRESS%</p>" +
+  "<p><b>Phone: </b>%PHONE%</p>" +
+  "<p><b>URL: </b><a href=\"%URL%\">%URL%</a></p>" +
+  "<p>Info source: <a href=\"https://api.foursquare.com\">Foursquare</a></p>" +
+  "</div>"
 
 function initMap() {
   var locationSeattle = {lat: 47.610984, lng: -122.337031};
@@ -113,6 +127,8 @@ function initMap() {
     zoom: 13,
     center: locationSeattle
   });
+  infoWindow = new google.maps.InfoWindow();
+
 
   createMarkers();
 }
@@ -128,10 +144,49 @@ function createMarkers() {
 
     marker.addListener('click', function() {
       self = this;
+
+      // Bounce the marker when it is clicked
       this.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function() {
         self.setAnimation(null);
       }, 700);
+
+      // Make ajax request to Foursquare API to get information of clicked marker
+      var foursquareApiUrl = "https://api.foursquare.com/v2/venues/search";
+      foursquareApiUrl += "?" + $.param({
+        client_id: myFoursquareKey.client_id,
+        client_secret: myFoursquareKey.client_secret,
+        v: "20170910",
+        intent: "match",
+        query: marker.title,
+        ll: marker.position.lat.toString() + "," + marker.position.lng.toString()
+      });
+      console.log("Marker clicked");
+      $.ajax({
+        url: foursquareApiUrl,
+        method: "GET"
+      }).done(function(result) {
+        var content = ""
+        try {
+          content = INFO_WINDOW_TEMPLATE;
+          content.replace("%ADDRESS%", result.response.venues[0].location.formattedAddress);
+          content.replace("%PHONE%", result.response.venues[0].contact.formattedPhone);
+          content.replace("%URL%", result.response.venues[0].url);
+        }
+        catch (err) {
+          content = "Failed to get information of location from foursquare.com";
+        }
+        infoWindow.setContent(content);
+        infoWindow.open(map, marker);
+      }).fail(function(err) {
+        content = "Failed to get information of location from foursquare.com";
+        infoWindow.setContent(content);
+        infoWindow.open(map, marker);
+      });
+
+      // Open infoWindow
+      infoWindow.setContent(INFO_WINDOW_TEMPLATE.replace("%TITLE%", marker.title));
+      infoWindow.open(map, marker);
     });
 
     markers.push(marker);
@@ -141,10 +196,6 @@ function createMarkers() {
 var ViewModel = function () {
   self = this;
 
-  // this.currentMuseums = []
-  // for (i = 0; i < museums.length; i++) {
-  //   this.currentMuseums.push(museums[i]);
-  // }
   this.displayedMuseums = ko.observableArray(museums.slice());
 
   this.museumClicked = function(museum) {
@@ -163,22 +214,18 @@ var ViewModel = function () {
   this.filterTextChanged = function() {
     var latestFilterText = this.filterText().trim().toLowerCase();
 
+    this.displayedMuseums.removeAll();
     if (latestFilterText === "") {
-      this.displayedMuseums.removeAll();
-      museums.slice().forEach(function(museum) {
-        self.displayedMuseums.push(museum);
-      });
+      for (i = 0; i < museums.length; i++) {
+        this.displayedMuseums.push(museums[i]);
+      }
 
       markers.forEach(function(marker) {
         marker.setMap(map);
       });
     } else {
-      this.displayedMuseums.removeAll();
-
-      for(i=0; i < museums.length; i++) {
-        console.log("Iterating list items");
+      for (i=0; i < museums.length; i++) {
         if (museums[i].name.toLowerCase().includes(latestFilterText)) {
-          console.log("Found a match");
           this.displayedMuseums.push(museums[i])
         }
       }
