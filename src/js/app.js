@@ -114,12 +114,6 @@ var museums = [
 var markers = [];
 var map;
 var infoWindow;
-var INFO_WINDOW_TEMPLATE = "<div><h6>%TITLE%</h6>" +
-  "<p><b>Address: </b>%ADDRESS%</p>" +
-  "<p><b>Phone: </b>%PHONE%</p>" +
-  "<p><b>URL: </b><a href=\"%URL%\">%URL%</a></p>" +
-  "<p>Info source: <a href=\"https://api.foursquare.com\">Foursquare</a></p>" +
-  "</div>"
 
 function initMap() {
   var locationSeattle = {lat: 47.610984, lng: -122.337031};
@@ -159,7 +153,7 @@ function createMarkers() {
         v: "20170910",
         intent: "match",
         query: marker.title,
-        ll: marker.position.lat.toString() + "," + marker.position.lng.toString()
+        ll: museum.lat.toString() + "," + museum.lng.toString()
       });
       console.log("Marker clicked");
       $.ajax({
@@ -168,10 +162,18 @@ function createMarkers() {
       }).done(function(result) {
         var content = ""
         try {
-          content = INFO_WINDOW_TEMPLATE;
-          content.replace("%ADDRESS%", result.response.venues[0].location.formattedAddress);
-          content.replace("%PHONE%", result.response.venues[0].contact.formattedPhone);
-          content.replace("%URL%", result.response.venues[0].url);
+          content += "<div><h6>" + museum.name + "</h6>"
+          if (result.response.venues[0].location.formattedAddress) {
+            content += "<p><b>Address: </b>" + result.response.venues[0].location.formattedAddress + "</p>"
+          }
+          if (result.response.venues[0].contact.formattedPhone) {
+            content += "<p><b>Phone: </b>" + result.response.venues[0].contact.formattedPhone + "</p>"
+          }
+          if (result.response.venues[0].url) {
+            content += "<p><b>URL: </b><a href=\"" + result.response.venues[0].url + "\">"
+            content += result.response.venues[0].url + "</a></p>"
+          }
+          content += "<p>Info source: <a href=\"https://api.foursquare.com\">Foursquare</a></p></div>"
         }
         catch (err) {
           content = "Failed to get information of location from foursquare.com";
@@ -183,10 +185,6 @@ function createMarkers() {
         infoWindow.setContent(content);
         infoWindow.open(map, marker);
       });
-
-      // Open infoWindow
-      infoWindow.setContent(INFO_WINDOW_TEMPLATE.replace("%TITLE%", marker.title));
-      infoWindow.open(map, marker);
     });
 
     markers.push(marker);
