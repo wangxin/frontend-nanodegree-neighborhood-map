@@ -139,7 +139,13 @@ function createMarkers() {
 }
 
 var ViewModel = function () {
-  this.museumList = ko.observableArray([]);
+  self = this;
+
+  // this.currentMuseums = []
+  // for (i = 0; i < museums.length; i++) {
+  //   this.currentMuseums.push(museums[i]);
+  // }
+  this.displayedMuseums = ko.observableArray(museums.slice());
 
   this.museumClicked = function(museum) {
     markers.forEach(function(marker) {
@@ -155,14 +161,36 @@ var ViewModel = function () {
   this.filterText = ko.observable("");
 
   this.filterTextChanged = function() {
-    var latestFilterText = this.filterText().toLowerCase();
-    markers.forEach(function(marker) {
-      if (marker.title.toLowerCase().includes(latestFilterText)) {
+    var latestFilterText = this.filterText().trim().toLowerCase();
+
+    if (latestFilterText === "") {
+      this.displayedMuseums.removeAll();
+      museums.slice().forEach(function(museum) {
+        self.displayedMuseums.push(museum);
+      });
+
+      markers.forEach(function(marker) {
         marker.setMap(map);
-      } else {
-        marker.setMap(null);
+      });
+    } else {
+      this.displayedMuseums.removeAll();
+
+      for(i=0; i < museums.length; i++) {
+        console.log("Iterating list items");
+        if (museums[i].name.toLowerCase().includes(latestFilterText)) {
+          console.log("Found a match");
+          this.displayedMuseums.push(museums[i])
+        }
       }
-    });
+
+      markers.forEach(function(marker) {
+        if (marker.title.toLowerCase().includes(latestFilterText)) {
+          marker.setMap(map);
+        } else {
+          marker.setMap(null);
+        }
+      });
+    }
   }
 };
 
