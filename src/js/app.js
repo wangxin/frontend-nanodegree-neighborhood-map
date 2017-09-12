@@ -142,12 +142,14 @@ function showInfoWindow(clickedMarker) {
       content += "<p>Info source: <a href=\"https://api.foursquare.com\">Foursquare</a></p></div>"
     }
     catch (err) {
-      content = "Failed to get information of location from foursquare.com";
+      content = "<h6>" + clickedMarker.getTitle() + "</h6>" +
+        "<p>Failed to get information of location from foursquare.com</p>";
     }
     infoWindow.setContent(content);
     infoWindow.open(map, clickedMarker);
   }).fail(function(err) {
-    content = "Failed to get information of location from foursquare.com";
+    content = "<h6>" + clickedMarker.getTitle() + "</h6>" +
+      "<p>Failed to get information of location from foursquare.com</p>";
     infoWindow.setContent(content);
     infoWindow.open(map, clickedMarker);
   });
