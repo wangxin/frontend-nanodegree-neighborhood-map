@@ -11,29 +11,12 @@ var myFoursquareKey = {
   client_secret: "RFFC3DOC2HY2ABIFMR03WGWZR31J3E0IYTIM1JROUEVZHMKH"
 };
 
-var fourSquareUrl = "https://api.foursquare.com/v2/venues/search?intent=match&query=Seattle Art Museum&ll=47.607309,-122.338133&v=20170911&client_id=03RWDJQSNB2KCMEFBANXP05OBFIEGOSCXQS1EA2UPIVMKTKE&client_secret=RFFC3DOC2HY2ABIFMR03WGWZR31J3E0IYTIM1JROUEVZHMKH"
-
 var museums = [
     {
       name: "Asian Art Museum",
       lat: 47.630281,
       lng: -122.314244
     },
-    // {
-    //   name: "Aviation Pavilion, Museum of Flight",
-    //   lat: 47.519019,
-    //   lng: -122.298178
-    // },
-    // {
-    //   name: "Bellevue Arts Museum",
-    //   lat: 47.615222,
-    //   lng: -122.201380
-    // },
-    // {
-    //   name: "Burke Museum of Natural History and Culture",
-    //   lat: 47.660664,
-    //   lng: -122.310538
-    // },
     {
       name: "Coast Guard Museum Northwest",
       lat: 47.590632,
@@ -49,16 +32,6 @@ var museums = [
       lat: 47.606933,
       lng: -122.324059
     },
-    // {
-    //   name: "KidsQuest Children's Museum",
-    //   lat: 47.620864,
-    //   lng: -122.195904
-    // },
-    // {
-    //   name: "Museum of Communications",
-    //   lat: 47.540867,
-    //   lng: -122.323192
-    // },
     {
       name: "Museum of History & Industry",
       lat: 47.627618,
@@ -99,22 +72,13 @@ var museums = [
       lat: 47.598029,
       lng: -122.324956
     },
-    // {
-    //   name: "Seattle's Official Bad Art Museum of Art",
-    //   lat: 47.671452,
-    //   lng: -122.317132
-    // },
-    // {
-    //   name: "The Unity Museum",
-    //   lat: 47.661007,
-    //   lng: -122.313479
-    // }
   ];
 
 var markers = [];
 var map;
 var infoWindow;
 
+// Function to initialize google maps and its related objects
 function initMap() {
   var locationSeattle = {lat: 47.610984, lng: -122.337031};
   map = new google.maps.Map(document.getElementById('mapContainer'), {
@@ -123,10 +87,10 @@ function initMap() {
   });
   infoWindow = new google.maps.InfoWindow();
 
-
   createMarkers();
 }
 
+// Create marker objects according to the initial museum list
 function createMarkers() {
   museums.forEach(function(museum) {
     var marker = new google.maps.Marker({
@@ -137,20 +101,17 @@ function createMarkers() {
     });
 
     marker.addListener('click', function() {
-      self = this;
+      // Bounce the marker when marker is clicked
+      bounceMarker(marker);
 
-      // Bounce the marker when it is clicked
-      this.setAnimation(google.maps.Animation.BOUNCE);
-      setTimeout(function() {
-        self.setAnimation(null);
-      }, 700);
-      ShowInfoWindow(marker);
+      // Show info window when marker is clicked
+      showInfoWindow(marker);
     });
     markers.push(marker);
   });
 }
 
-function ShowInfoWindow(clickedMarker) {
+function showInfoWindow(clickedMarker) {
   // Make ajax request to Foursquare API to get information of clicked marker or location
   var foursquareApiUrl = "https://api.foursquare.com/v2/venues/search";
   foursquareApiUrl += "?" + $.param({
@@ -192,6 +153,13 @@ function ShowInfoWindow(clickedMarker) {
   });
 }
 
+function bounceMarker(clickedMarker) {
+  clickedMarker.setAnimation(google.maps.Animation.BOUNCE);
+  setTimeout(function() {
+    clickedMarker.setAnimation(null);
+  }, 1400);
+}
+
 var ViewModel = function () {
   self = this;
 
@@ -200,11 +168,11 @@ var ViewModel = function () {
   this.museumClicked = function(museum) {
     markers.forEach(function(marker) {
       if (marker.title === museum.name) {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(function() {
-          marker.setAnimation(null);
-        }, 700);
-        ShowInfoWindow(marker);
+        // Bounce the marker associated with the clicked list item
+        bounceMarker(marker);
+
+        // Show info window for the marker associated with the clicked list item
+        showInfoWindow(marker);
       }
     });
   };
@@ -214,22 +182,24 @@ var ViewModel = function () {
   this.filterTextChanged = function() {
     var latestFilterText = this.filterText().trim().toLowerCase();
 
+    // Clean up the location list
     this.displayedMuseums.removeAll();
+
     if (latestFilterText === "") {
+      // If filter text is cleared, show all list items and all markers
       for (i = 0; i < museums.length; i++) {
         this.displayedMuseums.push(museums[i]);
       }
-
       markers.forEach(function(marker) {
         marker.setMap(map);
       });
     } else {
+      // If filter text is entered, filter the list and markers
       for (i=0; i < museums.length; i++) {
         if (museums[i].name.toLowerCase().includes(latestFilterText)) {
           this.displayedMuseums.push(museums[i])
         }
       }
-
       markers.forEach(function(marker) {
         if (marker.title.toLowerCase().includes(latestFilterText)) {
           marker.setMap(map);
