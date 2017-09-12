@@ -144,50 +144,51 @@ function createMarkers() {
       setTimeout(function() {
         self.setAnimation(null);
       }, 700);
-
-      // Make ajax request to Foursquare API to get information of clicked marker
-      var foursquareApiUrl = "https://api.foursquare.com/v2/venues/search";
-      foursquareApiUrl += "?" + $.param({
-        client_id: myFoursquareKey.client_id,
-        client_secret: myFoursquareKey.client_secret,
-        v: "20170910",
-        intent: "match",
-        query: marker.title,
-        ll: museum.lat.toString() + "," + museum.lng.toString()
-      });
-      console.log("Marker clicked");
-      $.ajax({
-        url: foursquareApiUrl,
-        method: "GET"
-      }).done(function(result) {
-        var content = ""
-        try {
-          content += "<div><h6>" + museum.name + "</h6>"
-          if (result.response.venues[0].location.formattedAddress) {
-            content += "<p><b>Address: </b>" + result.response.venues[0].location.formattedAddress + "</p>"
-          }
-          if (result.response.venues[0].contact.formattedPhone) {
-            content += "<p><b>Phone: </b>" + result.response.venues[0].contact.formattedPhone + "</p>"
-          }
-          if (result.response.venues[0].url) {
-            content += "<p><b>URL: </b><a href=\"" + result.response.venues[0].url + "\">"
-            content += result.response.venues[0].url + "</a></p>"
-          }
-          content += "<p>Info source: <a href=\"https://api.foursquare.com\">Foursquare</a></p></div>"
-        }
-        catch (err) {
-          content = "Failed to get information of location from foursquare.com";
-        }
-        infoWindow.setContent(content);
-        infoWindow.open(map, marker);
-      }).fail(function(err) {
-        content = "Failed to get information of location from foursquare.com";
-        infoWindow.setContent(content);
-        infoWindow.open(map, marker);
-      });
+      ShowInfoWindow(marker);
     });
-
     markers.push(marker);
+  });
+}
+
+function ShowInfoWindow(clickedMarker) {
+  // Make ajax request to Foursquare API to get information of clicked marker or location
+  var foursquareApiUrl = "https://api.foursquare.com/v2/venues/search";
+  foursquareApiUrl += "?" + $.param({
+    client_id: myFoursquareKey.client_id,
+    client_secret: myFoursquareKey.client_secret,
+    v: "20170910",
+    intent: "match",
+    query: clickedMarker.getTitle(),
+    ll: clickedMarker.getPosition().lat().toString() + "," + clickedMarker.getPosition().lng().toString()
+  });
+  $.ajax({
+    url: foursquareApiUrl,
+    method: "GET"
+  }).done(function(result) {
+    var content = ""
+    try {
+      content += "<div><h6>" + clickedMarker.title + "</h6>"
+      if (result.response.venues[0].location.formattedAddress) {
+        content += "<p><b>Address: </b>" + result.response.venues[0].location.formattedAddress + "</p>"
+      }
+      if (result.response.venues[0].contact.formattedPhone) {
+        content += "<p><b>Phone: </b>" + result.response.venues[0].contact.formattedPhone + "</p>"
+      }
+      if (result.response.venues[0].url) {
+        content += "<p><b>URL: </b><a href=\"" + result.response.venues[0].url + "\">"
+        content += result.response.venues[0].url + "</a></p>"
+      }
+      content += "<p>Info source: <a href=\"https://api.foursquare.com\">Foursquare</a></p></div>"
+    }
+    catch (err) {
+      content = "Failed to get information of location from foursquare.com";
+    }
+    infoWindow.setContent(content);
+    infoWindow.open(map, clickedMarker);
+  }).fail(function(err) {
+    content = "Failed to get information of location from foursquare.com";
+    infoWindow.setContent(content);
+    infoWindow.open(map, clickedMarker);
   });
 }
 
@@ -203,6 +204,7 @@ var ViewModel = function () {
         setTimeout(function() {
           marker.setAnimation(null);
         }, 700);
+        ShowInfoWindow(marker);
       }
     });
   };
