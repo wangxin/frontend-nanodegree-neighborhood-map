@@ -34,12 +34,14 @@ module.exports = {
     "no-unused-vars": [
       "error",
       {
-        "varsIgnorePattern": "initMap"
+        "varsIgnorePattern": "initMap|mapError|myFoursquareKey|museums"
       }
     ]
   },
   "globals": {
     "ko": false,
-    "google": false
+    "google": false,
+    "museums": false,
+    "myFoursquareKey": false
   }
 };
