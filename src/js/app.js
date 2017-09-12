@@ -195,9 +195,9 @@ var ViewModel = function () {
       });
     } else {
       // If filter text is entered, filter the list and markers
-      for (i = 0; i < museums.length; i++) {
-        if (museums[i].name.toLowerCase().includes(latestFilterText)) {
-          this.displayedMuseums.push(museums[i]);
+      for (var j = 0; j < museums.length; j++) {
+        if (museums[j].name.toLowerCase().includes(latestFilterText)) {
+          this.displayedMuseums.push(museums[j]);
         }
       }
       markers.forEach(function (marker) {
